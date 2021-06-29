@@ -138,10 +138,6 @@ namespace Shop2.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
             var product = _db.Products.Find(id);
 
             if (product == null)
@@ -149,14 +145,17 @@ namespace Shop2.Controllers
                 return NotFound();
             }
 
-            else
+            string upload = _webHostEnvironment.WebRootPath + ENV.ImagePath;
+            var oldFile = Path.Combine(upload, product.Image);
+
+            if (System.IO.File.Exists(oldFile))
             {
+                System.IO.File.Delete(oldFile);
+            }
 
                 _db.Products.Remove(product);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
-            }
-
         }
     }
 }

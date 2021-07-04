@@ -436,3 +436,5 @@ C:\Users\Pavlo\source\repos\Shop2\Shop2\obj\Debug\net5.0\Razor\Views\Category\Ed
 C:\Users\Pavlo\source\repos\Shop2\Shop2\obj\Debug\net5.0\Razor\Views\Product\Index.cshtml.g.cs
 C:\Users\Pavlo\source\repos\Shop2\Shop2\obj\Debug\net5.0\Razor\Views\Product\Upsert.cshtml.g.cs
 C:\Users\Pavlo\source\repos\Shop2\Shop2\obj\Debug\net5.0\Razor\Views\Product\Delete.cshtml.g.cs
+C:\Users\Pavlo\source\repos\Shop2\Shop2\obj\Debug\net5.0\Razor\Views\Shared\_productCard.cshtml.g.cs
+C:\Users\Pavlo\source\repos\Shop2\Shop2\obj\Debug\net5.0\Razor\Views\Home\Details.cshtml.g.cs

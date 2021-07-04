@@ -27,6 +27,13 @@ namespace Shop2
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHttpContextAccessor(); //визначає чи є сесія
+            services.AddSession(Options =>
+           {
+               Options.IdleTimeout = TimeSpan.FromMinutes(30); // тривалість сесії
+               Options.Cookie.HttpOnly = true;
+               Options.Cookie.IsEssential = true;
+           });
             services.AddControllersWithViews();
         }
 
@@ -49,6 +56,7 @@ namespace Shop2
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseSession();  // підключення сесії
 
             app.UseEndpoints(endpoints =>
             {

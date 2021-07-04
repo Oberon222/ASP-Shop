@@ -15,8 +15,8 @@ namespace Shop2.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ApplicationDbContext _db; // доступ до контекста
+        private readonly IWebHostEnvironment _webHostEnvironment;  //шлях до папки з картинками
         public ProductController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment )
         {
             _db = db;
@@ -65,14 +65,14 @@ namespace Shop2.Controllers
         {
                 if (ModelState.IsValid)
                 {
-                    var files = HttpContext.Request.Form.Files; // зберігаються всі файли
+                    var files = HttpContext.Request.Form.Files; // зберігаються всі файли з форми
                     string webRootPath = _webHostEnvironment.WebRootPath;
                     
                     if(productVM.Product.Id == 0)
                     {
-                        string upload = webRootPath + ENV.ImagePath;
+                        string upload = webRootPath + ENV.ImagePath; //повний шлях до файла
                         string filemane = Guid.NewGuid().ToString(); // генерить рандомне імя файлу
-                        string extentions = Path.GetExtension(files[0].FileName);
+                        string extentions = Path.GetExtension(files[0].FileName); //розширення файла 
 
                         using(var fileStream = new FileStream(Path.Combine(upload, filemane + extentions), FileMode.Create))
                         {
@@ -91,7 +91,7 @@ namespace Shop2.Controllers
                             string extentions = Path.GetExtension(files[0].FileName);
 
                             var oldFile = Path.Combine(upload, formObject.Image);
-                            if (System.IO.File.Exists(oldFile))
+                            if (System.IO.File.Exists(oldFile)) //перевірка чи існує цей файл
                             {
                                 System.IO.File.Delete(oldFile);
                             }
@@ -157,5 +157,7 @@ namespace Shop2.Controllers
                 _db.SaveChanges();
                 return RedirectToAction("Index");
         }
+
+       
     }
 }

@@ -11,5 +11,8 @@ namespace Shop2
 
         // може генеритись випадковий набір символів - ключ до сервера
         public const string SessionCart = "ShoppingcartSession";
+
+        public static string AdminRole = "Admin";
+        public static string CustomerRole = "Customer";
     }
 }

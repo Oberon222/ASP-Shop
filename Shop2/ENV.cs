@@ -14,5 +14,7 @@ namespace Shop2
 
         public static string AdminRole = "Admin";
         public static string CustomerRole = "Customer";
+
+        public const string EmailAdmin = "pavelkost222@gmail.com";
     }
 }

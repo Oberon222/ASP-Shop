@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Shop2.Data;
 using Shop2.Models;
@@ -7,8 +9,10 @@ using Shop2.Models.ViewModels;
 using Shop2.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Shop2.Controllers
@@ -17,16 +21,19 @@ namespace Shop2.Controllers
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly IWebHostEnvironment _webHostEnvironment;  //шлях до папки з картинками
+        private readonly IEmailSender _emailSender;
 
         [BindProperty] //
         public ProductUserVM ProductUserVM { get; set; } 
-        public CartController(ApplicationDbContext db)
+        public CartController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment, IEmailSender emailSender)
         {
             _db = db;
+            _webHostEnvironment = webHostEnvironment;
+            _emailSender = emailSender;
         }
         public IActionResult Index()
-        {
-            
+        {   
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>(); 
             if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(ENV.SessionCart) != null &&
                 HttpContext.Session.Get<IEnumerable<ShoppingCart>>(ENV.SessionCart).Count() > 0)
@@ -41,6 +48,16 @@ namespace Shop2.Controllers
 
             return View(productList);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Index")]
+        public IActionResult IndexPost()
+        {
+            return RedirectToAction(nameof(Order));
+        }
+
+
 
         public IActionResult Remove(int id)
         {
@@ -86,9 +103,33 @@ namespace Shop2.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Order")]
-        public IActionResult OrderPost(ProductUserVM productUserVM)
+        public async Task<IActionResult> OrderPostAsync(ProductUserVM productUserVM)
         {
+            var PathToTamplate = _webHostEnvironment.WebRootPath + Path.DirectorySeparatorChar.ToString()
+                + "templates" + Path.DirectorySeparatorChar.ToString()
+                + "OrderConfirmation.html";
 
+            var Subject = "New order";
+            string HtmlBody = "";
+            using(StreamReader sr = System.IO.File.OpenText(PathToTamplate))
+            {
+                HtmlBody = sr.ReadToEnd();
+            }
+
+            StringBuilder productListSB = new StringBuilder();
+            foreach(var item in productUserVM.ProductList)
+            {
+                productListSB.Append($" - Name: {item.Name} <span style='font-size: 14px'>(ID : {item.Id})</span>");
+            }
+
+            string messageBody = string.Format(
+                HtmlBody,
+                productUserVM.AppUser.Name,
+                productUserVM.AppUser.Surname,
+                productUserVM.AppUser.Email,
+                productListSB.ToString());
+
+            await _emailSender.SendEmailAsync(ENV.EmailAdmin, Subject, messageBody);
             //Email send
             return RedirectToAction(nameof(OrderConfirmation));
         }
